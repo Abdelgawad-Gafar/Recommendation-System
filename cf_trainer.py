@@ -6,7 +6,7 @@ import os
 from database import logger
 
 class CFTrainer:
-    def __init__(self, cache_file="svd_results.pkl"):
+    def __init__(self, cache_file="svd_data/svd_results.pkl"):
         self.cache_file = cache_file
 
     def train_from_db(self, df):

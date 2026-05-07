@@ -21,5 +21,19 @@ reels_collection = chroma_client.get_or_create_collection(name="alluvo_reels")
 
 # 2. SQL Server
 def get_sql_conn():
-    conn_str = f"DRIVER={os.getenv('SQL_DRIVER', '{SQL Server}')};SERVER={os.getenv('SQL_SERVER', 'YOUR_SERVER')};DATABASE={os.getenv('SQL_DATABASE', 'AlluvoDB')};UID={os.getenv('SQL_UID', 'user')};PWD={os.getenv('SQL_PWD', 'pass')}"
-    return pyodbc.connect(conn_str)
+    driver = os.getenv('SQL_DRIVER', '{SQL Server}')
+    server = os.getenv('SQL_SERVER')
+    database = os.getenv('SQL_DATABASE')
+    uid = os.getenv('SQL_UID')
+    pwd = os.getenv('SQL_PWD')
+
+    if not server or not database:
+        logger.error("Database configuration incomplete: SQL_SERVER or SQL_DATABASE missing")
+        raise RuntimeError("Database configuration incomplete")
+
+    conn_str = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={uid};PWD={pwd}"
+    try:
+        return pyodbc.connect(conn_str, timeout=5)
+    except Exception as e:
+        logger.exception("Failed to connect to SQL Server")
+        raise

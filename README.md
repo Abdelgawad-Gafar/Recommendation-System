@@ -1,51 +1,92 @@
-# Alluvo Hybrid Recommendation Engine
+# Recommendation System
 
-Minimal setup and run instructions for the recommendation service.
+## What this system does
 
-Prerequisites
-- Python 3.10+ (3.11 recommended)
-- Appropriate SQL Server ODBC driver installed on Windows
+Recommends reels using:
 
-Quick start
+* Content-based filtering
+* Collaborative filtering (SVD)
+* Trend-based ranking
 
-1. Create and activate a virtual environment:
+---
 
-```bash
-python -m venv .venv
-# Windows PowerShell
-.\.venv\Scripts\Activate.ps1
-# or cmd
-.\.venv\Scripts\activate.bat
+## Architecture
+
+* FastAPI backend
+* Chroma vector database
+* SQL database
+* Offline model training
+
+---
+
+## Project Structure
+
+* main.py → API entry
+* reel_service.py → recommendation logic
+* user_service.py → user logic
+* cf_trainer.py → SVD training
+* run_daily_training.py → retraining script
+* database.py → DB setup
+* models.py → schemas
+
+---
+
+## Environment Variables
+
+Create `.env`
+
+```
+DB_URL=postgresql://user:password@db:5432/reco
+CHROMA_DB_PATH=/data/vector_db
+MODEL_PATH=/data/model/svd.pkl
 ```
 
-2. Install dependencies:
+---
 
-```bash
+## Run locally
+
+```
 pip install -r requirements.txt
+uvicorn main:app --reload
 ```
 
-3. Copy `.env` and update values (SQL server, user, password, CHROMA_PATH if needed).
+---
 
-4. Run the app:
+## Run training
 
-```bash
-uvicorn main:app --reload --port ${PORT:-8000}
+```
+python run_daily_training.py
 ```
 
-API notes
-- Process a reel: `POST /api/reels/process`
-- Update reel metadata: `PUT /api/reels/update-metadata`
-- Delete reel (by query param): `DELETE /api/reels/delete?reel_id=<ID>`
+---
 
-Example delete request:
+## API
 
-```bash
-curl -X DELETE "http://localhost:8000/api/reels/delete?reel_id=12345"
+```
+GET /recommend/{user_id}
 ```
 
-Troubleshooting
-- If connecting to SQL Server fails, ensure the ODBC driver is installed and `.env` values are correct.
-- For GPU support, ensure compatible `torch` and CUDA drivers are installed.
+---
 
-License
-This repository contains project work for a graduation project.
+## Production
+
+* Use gunicorn + uvicorn workers
+* Store model + vector DB in volume
+* Use cron or celery for retraining
+* Add caching layer (Redis)
+
+---
+
+## Scaling
+
+* Separate training service
+* Use async DB
+* Add monitoring (Prometheus)
+
+---
+
+## Notes
+
+* Do not commit .env
+* Do not commit logs
+* Clean **pycache**

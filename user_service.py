@@ -43,7 +43,7 @@ async def recommend(user: UserPayload, top_k: int = 10):
     cf_results = []
 
     # 1. الذكاء الاصطناعي (AI)
-    # 1. الذكاء الاصطناعي (AI)
+    
     try:
         if not viewed_ids:
             user_vector = np.zeros(512)
@@ -78,6 +78,12 @@ async def recommend(user: UserPayload, top_k: int = 10):
             logger.warning("CF System: Missing pickle file or user not found. Skipping CF.")
     except Exception as e:
         logger.error(f"CF System Offline: {e}")
+
+    # 3. الاتجاهات / الترند (Trend) - SQL Fallback
+    try:
+        trend_results = get_trend_reels_sql(top_k, viewed_ids)[:top_k]
+    except Exception as e:
+        logger.error(f"Trend System (SQL) Failed: {e}")
 
     # ==================== المازج الديناميكي (Dynamic Mixer) ====================
     working_systems = []

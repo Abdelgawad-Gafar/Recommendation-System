@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
     scheduler.start()
     
     # إذا كان الملف غير موجود (أول مرة يتم تشغيل النظام فيها)، ابدأ التدريب فوراً في الخلفية
-    if not os.path.exists("svd_results.pkl"):
+    if not os.path.exists("svd_data/svd_results.pkl"):
         print("SVD Matrix not found. Starting initial training in background...")
         scheduler.add_job(sync_and_train)
         

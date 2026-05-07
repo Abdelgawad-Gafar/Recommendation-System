@@ -1,4 +1,7 @@
-import tempfile, requests, os
+import tempfile, os
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from fastapi import APIRouter, HTTPException
 from typing import List
 from pydantic import BaseModel
@@ -39,17 +42,39 @@ async def process_reels_batch(payload: BatchProcessPayload):
             products_info = ", ".join([f"{p.get('product', {}).get('name', '')}" for p in reel.productReels])
             context = f"Brand: {reel.brand.displayName}. Desc: {reel.brand.description}. Products: {products_info}"
 
-            resp = requests.get(reel.videoUrl, timeout=15) # إضافة timeout للأمان
-            resp.raise_for_status() # التأكد أن الرابط يعمل
+            # Use a session with retries and stream the download to disk to avoid large memory spikes
+            session = requests.Session()
+            retries = Retry(total=3, backoff_factor=0.5, status_forcelist=[429,500,502,503,504])
+            session.mount('http://', HTTPAdapter(max_retries=retries))
+            session.mount('https://', HTTPAdapter(max_retries=retries))
 
-            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
-                tmp.write(resp.content)
-                video_path = tmp.name
+            resp = session.get(reel.videoUrl, timeout=15, stream=True)
+            resp.raise_for_status()
+
+            tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
+            video_path = tmp.name
+            try:
+                for chunk in resp.iter_content(chunk_size=1024*1024):
+                    if chunk:
+                        tmp.write(chunk)
+                tmp.flush()
+            finally:
+                tmp.close()
 
             # تحليل الذكاء الاصطناعي
-            vector = analyzer.process_video(video_path, context)
-            if os.path.exists(video_path):
-                os.remove(video_path)
+            try:
+                vector = analyzer.process_video(video_path, context)
+            finally:
+                if os.path.exists(video_path):
+                    try:
+                        os.remove(video_path)
+                    except Exception:
+                        logger.warning(f"Failed to delete temp video {video_path}")
+
+            try:
+                session.close()
+            except Exception:
+                pass
 
             # الإضافة لـ ChromaDB
             reels_collection.add(

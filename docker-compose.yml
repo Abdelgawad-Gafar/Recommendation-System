@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  alluvo-engine:
+    build: .
+    container_name: alluvo_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - alluvo_vector_data:/app/alluvo_vector_db
+      - alluvo_svd_data:/app/svd_data
+    restart: unless-stopped
+
+volumes:
+  alluvo_vector_data:
+    name: alluvo_vector_data
+  alluvo_svd_data:
+    name: alluvo_svd_data
