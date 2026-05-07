@@ -8,6 +8,9 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    # السطرين دول هيجبروا دوكر إنه يتجاهل تعريف الويندوز اللي في ملف .env ويستخدم تعريف لينكس
+    environment:
+      - SQL_DRIVER={ODBC Driver 18 for SQL Server}
     volumes:
       - alluvo_vector_data:/app/alluvo_vector_db
       - alluvo_svd_data:/app/svd_data
