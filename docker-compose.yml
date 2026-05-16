@@ -8,12 +8,23 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    # السطرين دول هيجبروا دوكر إنه يتجاهل تعريف الويندوز اللي في ملف .env ويستخدم تعريف لينكس
     environment:
+      # إجبار النظام على استخدام تعريف لينكس لقاعدة البيانات
       - SQL_DRIVER={ODBC Driver 18 for SQL Server}
     volumes:
       - alluvo_vector_data:/app/alluvo_vector_db
       - alluvo_svd_data:/app/svd_data
+
+      - huggingface_cache:/root/.cache/huggingface
+      - torch_cache:/root/.cache/torch
+    # تفعيل دعم كارت الشاشة NVIDIA
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     restart: unless-stopped
 
 volumes:
@@ -21,3 +32,7 @@ volumes:
     name: alluvo_vector_data
   alluvo_svd_data:
     name: alluvo_svd_data
+  huggingface_cache:
+    name: huggingface_cache
+  torch_cache:
+    name: torch_cache

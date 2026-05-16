@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from transformers import CLIPProcessor, CLIPModel
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 from PIL import Image
 import logging
 

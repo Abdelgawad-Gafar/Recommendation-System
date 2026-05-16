@@ -1,0 +1,24 @@
+# 1. الداتا المحلية (اللي عملت المشكلة)
+alluvo_vector_db/
+svd_data/
+
+# 2. ملفات بايثون المؤقتة (مهم جداً عشان متعملش تعارض مع لينكس)
+__pycache__/
+*.pyc
+*.pyo
+
+# 3. ملفات الأمان (عشان الباسوردات متتنسخش جوه الصورة)
+.env
+
+# 4. ملفات السجلات (Logs)
+app.log
+*.log
+
+# 5. ملفات خاصة بـ Git و Docker (ملهاش لازمة جوه الكونتينر)
+.git/
+.gitignore
+Dockerfile
+docker-compose.yml
+
+alluvo_vector_db/
+svd_data/
