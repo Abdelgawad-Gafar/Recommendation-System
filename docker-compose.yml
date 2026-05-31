@@ -5,7 +5,7 @@ services:
     build: .
     container_name: alluvo_backend
     ports:
-      - "8000:7000"
+      - "7000:8000"
     env_file:
       - .env
     environment:
