@@ -17,14 +17,7 @@ services:
 
       - huggingface_cache:/root/.cache/huggingface
       - torch_cache:/root/.cache/torch
-    # تفعيل دعم كارت الشاشة NVIDIA
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      
     restart: unless-stopped
 
 volumes:
