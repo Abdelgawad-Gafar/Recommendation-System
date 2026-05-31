@@ -34,8 +34,9 @@ RUN pip install --upgrade pip setuptools wheel
 
 # 4. تسريع البناء (Layer Caching): تسطيب PyTorch في طبقة منفصلة
 
-RUN pip install --default-timeout=2000 --retries=20 torch==2.1.0
-
+RUN pip install --no-cache-dir torch \
+  --index-url https://download.pytorch.org/whl/cpu
+  
 # 5. نسخ باقي ملف المتطلبات وتسطيب المكتبات الخفيفة
 COPY requirements.txt .
 RUN pip install -r requirements.txt
