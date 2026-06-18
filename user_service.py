@@ -12,7 +12,7 @@ def get_trend_reels_sql(top_k: int, viewed_ids: list):
         conn = get_sql_conn()
         cursor = conn.cursor()
         # جلب أضعاف العدد المطلوب كاحتياطي (Buffer)
-        cursor.execute(f"SELECT TOP {top_k * 3} Id FROM ReelsTable ORDER BY (NumOfWatches + NumOfLikes * 2) DESC")
+        cursor.execute(f"SELECT TOP {top_k * 3} Id FROM Reels ORDER BY (NumOfWatches + NumOfLikes * 2) DESC")
         rows = cursor.fetchall()
         conn.close()
         
@@ -25,7 +25,7 @@ def get_latest_reels_sql(top_k: int, viewed_ids: list):
     try:
         conn = get_sql_conn()
         cursor = conn.cursor()
-        cursor.execute(f"SELECT TOP {top_k * 3} Id FROM ReelsTable ORDER BY CreatedAt DESC")
+        cursor.execute(f"SELECT TOP {top_k * 3} Id FROM Reels ORDER BY CreatedAt DESC")
         rows = cursor.fetchall()
         conn.close()
         
@@ -68,7 +68,7 @@ async def recommend(user: UserPayload, top_k: int = 10):
     except Exception as e:
         logger.error(f"AI System Offline: {e}")
 
-    # 2. السلوك المجتمعي (CF)
+   
     # 2. السلوك المجتمعي (CF)
     try:
         cf_raw = cf_engine.get_top_items_for_user(user.id, top_n=top_k * 3)
@@ -85,6 +85,11 @@ async def recommend(user: UserPayload, top_k: int = 10):
     except Exception as e:
         logger.error(f"Trend System (SQL) Failed: {e}")
 
+    detailed_status = {
+        "AI_System": "ONLINE" if ai_results else "OFFLINE",
+        "CF_System": "ONLINE" if cf_results else "OFFLINE",
+        "Trend_System": "ONLINE" if trend_results else "OFFLINE"
+    }
     # ==================== المازج الديناميكي (Dynamic Mixer) ====================
     working_systems = []
     if ai_results: working_systems.append(ai_results)
@@ -146,5 +151,6 @@ async def recommend(user: UserPayload, top_k: int = 10):
 
     return {
         "recommendedReelIds": unique_feed[:top_k],
-        "active_systems_count": len(working_systems)
+        "active_systems_count": len(working_systems),
+        "system_status": detailed_status
     }
