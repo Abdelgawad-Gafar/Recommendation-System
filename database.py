@@ -26,6 +26,10 @@ def get_sql_conn():
     database = os.getenv('SQL_DATABASE')
     uid = os.getenv('SQL_UID')
     pwd = os.getenv('SQL_PWD')
+    
+    logger.info(f"SQL_SERVER={server}")
+    logger.info(f"SQL_DATABASE={database}")
+    logger.info(f"SQL_UID={uid}")
 
     if not server or not database:
         logger.error("Database configuration incomplete: SQL_SERVER or SQL_DATABASE missing")
