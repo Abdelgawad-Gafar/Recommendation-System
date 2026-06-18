@@ -5,7 +5,7 @@ services:
     build: .
     container_name: alluvo_backend
     ports:
-      - "8000:8000"
+      - "7000:8000"
     env_file:
       - .env
     environment:
@@ -17,14 +17,7 @@ services:
 
       - huggingface_cache:/root/.cache/huggingface
       - torch_cache:/root/.cache/torch
-    # تفعيل دعم كارت الشاشة NVIDIA
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      
     restart: unless-stopped
 
 volumes:
