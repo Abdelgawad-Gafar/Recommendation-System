@@ -35,7 +35,15 @@ def get_sql_conn():
         logger.error("Database configuration incomplete: SQL_SERVER or SQL_DATABASE missing")
         raise RuntimeError("Database configuration incomplete")
 
-    conn_str = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={uid};PWD={pwd}"
+    conn_str = (
+        f"DRIVER={driver};"
+        f"SERVER={server};"
+        f"DATABASE={database};"
+        f"UID={uid};"
+        f"PWD={pwd};"
+        f"Encrypt={encrypt};"
+        f"TrustServerCertificate={trust};"
+    )
     try:
         return pyodbc.connect(conn_str, timeout=5)
     except Exception as e:
