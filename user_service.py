@@ -85,11 +85,11 @@ async def recommend(user: UserPayload, top_k: int = 10):
     except Exception as e:
         logger.error(f"Trend System (SQL) Failed: {e}")
 
-    detailed_status = {
-        "AI_System": "ONLINE" if ai_results else "OFFLINE",
-        "CF_System": "ONLINE" if cf_results else "OFFLINE",
-        "Trend_System": "ONLINE" if trend_results else "OFFLINE"
-    }
+    #detailed_status = {
+      #  "AI_System": "ONLINE" if ai_results else "OFFLINE",
+       # "CF_System": "ONLINE" if cf_results else "OFFLINE",
+      #  "Trend_System": "ONLINE" if trend_results else "OFFLINE"
+   # }
     # ==================== المازج الديناميكي (Dynamic Mixer) ====================
     working_systems = []
     if ai_results: working_systems.append(ai_results)
@@ -152,5 +152,5 @@ async def recommend(user: UserPayload, top_k: int = 10):
     return {
         "recommendedReelIds": unique_feed[:top_k],
         "active_systems_count": len(working_systems),
-        "system_status": detailed_status
+       # "system_status": detailed_status
     }
